@@ -1,4 +1,4 @@
 [core]
     remote = localstore
 ['remote "localstore"']
-    url = file:///C:/Users/Administrator/Pictures/dvc
+    url = C:/Users/Administrator/dvc-storage
