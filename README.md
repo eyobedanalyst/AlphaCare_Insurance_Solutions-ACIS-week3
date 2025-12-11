@@ -161,3 +161,338 @@ These are common challenges when adopting a data versioning pipeline.
 
 You faced difficulty merging, creating branches, and ensuring that task-1 code appeared correctly in main.
 This has now been resolved using Pull Requests and clean branch creation.
+
+This repository contains the implementation of Task 3: Statistical Hypothesis Testing and Task 4: Predictive Modeling for an insurance risk analysis project. The goal is to statistically validate risk drivers and build predictive models for claim severity and premium optimization.
+
+🚀 Quick Start
+Prerequisites
+bash
+Python 3.8+
+Git
+Installation
+bash
+# Clone the repository
+git clone https://github.com/yourusername/insurance-risk-analysis.git
+cd insurance-risk-analysis
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install DVC (if not already installed)
+pip install dvc
+Repository Setup
+bash
+# Initialize DVC
+dvc init
+
+# Set up remote storage (local example)
+mkdir ./dvc_storage
+dvc remote add -d localstorage ./dvc_storage
+
+# Pull processed data
+dvc pull
+📁 Project Structure
+text
+insurance-risk-analysis/
+│
+├── data/                           # Data directory (DVC tracked)
+│   ├── processed/                  # Cleaned datasets
+│   ├── features/                   # Engineered features
+│   └── models/                     # Saved models
+│
+├── notebooks/                      # Jupyter notebooks
+│   ├── task3_hypothesis_testing.ipynb
+│   ├── task4_modeling.ipynb
+│   └── results_analysis.ipynb
+│
+├── src/                            # Source code
+│   ├── __init__.py
+│   ├── hypothesis_testing/         # Task 3 modules
+│   │   ├── __init__.py
+│   │   ├── statistical_tests.py    # Statistical test implementations
+│   │   ├── metrics_calculator.py   # KPI calculations
+│   │   └── segmentation.py         # Data segmentation functions
+│   │
+│   └── modeling/                   # Task 4 modules
+│       ├── __init__.py
+│       ├── data_preprocessor.py    # Data cleaning & preparation
+│       ├── feature_engineer.py     # Feature engineering
+│       ├── model_trainer.py        # Model training pipeline
+│       ├── model_evaluator.py      # Model evaluation metrics
+│       └── shap_analyzer.py        # SHAP analysis for interpretability
+│
+├── tests/                          # Unit tests
+│   ├── test_hypothesis_tests.py
+│   └── test_models.py
+│
+├── reports/                        # Generated reports
+│   ├── hypothesis_test_results/
+│   ├── model_performance/
+│   └── business_recommendations/
+│
+├── config/                         # Configuration files
+│   ├── model_config.yaml
+│   └── test_config.yaml
+│
+├── .github/workflows/              # CI/CD pipelines
+├── requirements.txt                # Python dependencies
+├── dvc.yaml                        # DVC pipeline definition
+├── README.md                       # This file
+└── .gitignore
+🔬 Task 3: Statistical Hypothesis Testing
+Objective
+Statistically validate or reject key hypotheses about risk drivers to form the basis of a new segmentation strategy.
+
+Hypotheses Tested
+Hypothesis	Test Method	Metric	Significance Level
+H₁: No risk differences across provinces	ANOVA	Claim Frequency	α = 0.05
+H₂: No risk differences between zip codes	Kruskal-Wallis	Claim Severity	α = 0.05
+H₃: No margin differences between zip codes	Two-sample t-test	Profit Margin	α = 0.05
+H₄: No risk differences between genders	Chi-square test	Claim Frequency	α = 0.05
+Key Metrics
+Claim Frequency: Proportion of policies with at least one claim
+
+Claim Severity: Average claim amount (given a claim occurred)
+
+Margin: TotalPremium - TotalClaims
+
+Usage
+python
+# Run all hypothesis tests
+from src.hypothesis_testing.statistical_tests import HypothesisTester
+
+tester = HypothesisTester(data_path='data/processed/insurance_data_clean.csv')
+results = tester.run_all_tests()
+tester.generate_report(output_path='reports/hypothesis_test_results/')
+Expected Output
+Statistical test results (p-values, test statistics)
+
+Visualizations of group comparisons
+
+Business recommendations based on findings
+
+CSV/Excel report with detailed analysis
+
+🤖 Task 4: Predictive Modeling
+Objective
+Build and evaluate predictive models for claim severity prediction and premium optimization.
+
+Modeling Goals
+Claim Severity Prediction: Predict TotalClaims for policies with claims > 0
+
+Premium Optimization: Develop ML model to predict appropriate premiums
+
+Claim Probability: Binary classification for claim occurrence probability
+
+Models Implemented
+Model	Purpose	Target Variable	Evaluation Metrics
+Linear Regression	Baseline	TotalClaims	RMSE, R²
+Random Forest	Claim Severity	TotalClaims	RMSE, R², MAE
+XGBoost	Best-performing	TotalClaims	RMSE, R², MAE
+Random Forest Classifier	Claim Probability	HasClaim (0/1)	Accuracy, Precision, Recall, AUC-ROC
+Feature Engineering
+python
+# Key engineered features:
+1. VehicleAge = CurrentYear - VehicleYear
+2. PremiumToValueRatio = TotalPremium / CustomValueEstimate
+3. UrbanDensityScore (based on ZipCode)
+4. PreviousClaimsCount (rolling window)
+5. RiskScore = f(VehicleType, Province, AgeGroup)
+Usage
+python
+# Full modeling pipeline
+from src.modeling.model_trainer import ModelTrainer
+
+# Initialize trainer
+trainer = ModelTrainer(
+    data_path='data/processed/insurance_data_clean.csv',
+    config_path='config/model_config.yaml'
+)
+
+# Train models
+models, results = trainer.train_all_models()
+
+# Evaluate models
+trainer.evaluate_models(models)
+
+# Generate SHAP analysis
+trainer.explain_models(models, output_path='reports/model_performance/')
+Model Evaluation
+python
+# Expected performance metrics:
+- RMSE: Measure of prediction error (lower is better)
+- R²: Proportion of variance explained (higher is better)
+- MAE: Mean absolute error
+- AUC-ROC: For classification models
+- Feature Importance: Top influential features
+📊 Results Interpretation
+For Rejected Hypotheses (Task 3)
+markdown
+Example Interpretation:
+"We reject H₀ for provinces (p < 0.01). Gauteng exhibits 24% higher claim frequency
+than Western Cape, suggesting regional risk adjustment to premiums is warranted."
+For Predictive Models (Task 4)
+markdown
+Example Business Insight:
+"SHAP analysis reveals VehicleAge increases predicted claim amount by R850 per year.
+This provides quantitative evidence to refine age-based premium adjustments."
+🛠️ Development Workflow
+Branch Strategy
+bash
+# Create feature branch for task 3
+git checkout -b task3-hypothesis-testing
+
+# Create feature branch for task 4
+git checkout -b task4-predictive-models
+
+# Merge to main after completion
+git checkout main
+git merge task3-hypothesis-testing --no-ff
+git merge task4-predictive-models --no-ff
+Commit Guidelines
+bash
+# Descriptive commit messages
+git commit -m "TASK-3: Add ANOVA test for provincial risk differences"
+git commit -m "TASK-4: Implement XGBoost model with SHAP interpretability"
+git commit -m "TASK-4: Feature engineering - add UrbanDensityScore"
+Running Tests
+bash
+# Run hypothesis testing unit tests
+pytest tests/test_hypothesis_tests.py -v
+
+# Run modeling unit tests
+pytest tests/test_models.py -v
+
+# Run all tests with coverage
+pytest --cov=src tests/
+📈 Output Files
+Task 3 Outputs
+text
+reports/hypothesis_test_results/
+├── statistical_test_results.csv
+├── p_values_summary.xlsx
+├── visualizations/
+│   ├── province_risk_comparison.png
+│   ├── gender_risk_differences.png
+│   └── zipcode_margin_heatmap.png
+└── business_recommendations.md
+Task 4 Outputs
+text
+reports/model_performance/
+├── model_comparison.csv
+├── best_model_performance.json
+├── feature_importance/
+│   ├── xgboost_feature_importance.png
+│   ├── shap_summary_plot.png
+│   └── top_features_analysis.md
+├── predictions/
+│   ├── test_set_predictions.csv
+│   └── validation_results.json
+└── model_cards/
+    ├── xgboost_model_card.md
+    └── random_forest_model_card.md
+🔧 Configuration
+Model Configuration (config/model_config.yaml)
+yaml
+data:
+  train_test_split: 0.8
+  random_state: 42
+  target_column: 'TotalClaims'
+  
+models:
+  linear_regression:
+    fit_intercept: true
+    normalize: false
+    
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 5
+    
+  xgboost:
+    n_estimators: 200
+    max_depth: 7
+    learning_rate: 0.1
+    subsample: 0.8
+    
+evaluation:
+  metrics: ['rmse', 'r2', 'mae']
+  cross_validation_folds: 5
+  
+shap:
+  n_samples: 100
+  plot_type: 'bar'
+📝 Reporting
+Generate Complete Report
+bash
+# Run the reporting script
+python src/reporting/generate_final_report.py \
+    --hypothesis_results reports/hypothesis_test_results/ \
+    --model_results reports/model_performance/ \
+    --output reports/final_report/
+Report Structure
+Executive Summary: Key findings and recommendations
+
+Hypothesis Testing Results: Statistical validation of risk drivers
+
+Model Performance: Comparison of predictive models
+
+Business Implications: Actionable insights for pricing strategy
+
+Technical Details: Methodology and implementation notes
+
+Appendix: Code snippets, additional visualizations
+
+🚨 Troubleshooting
+Common Issues
+DVC Data Not Found
+
+bash
+# Pull data from remote storage
+dvc pull
+
+# Or reproduce the pipeline
+dvc repro
+Missing Dependencies
+
+bash
+# Update requirements
+pip install -r requirements.txt --upgrade
+Memory Issues with Large Datasets
+
+python
+# Use chunking in configuration
+data:
+  chunk_size: 10000
+  use_dask: true  # For very large datasets
+Debug Mode
+bash
+# Run with debug logging
+python -m src.modeling.model_trainer --debug
+
+# Or set environment variable
+export LOG_LEVEL=DEBUG
+🤝 Contributing
+Code Standards
+Follow PEP 8 for Python code
+
+Add docstrings to all functions and classes
+
+Write unit tests for new functionality
+
+Update documentation when changing features
+
+Pull Request Process
+Create feature branch from main
+
+Add tests for new functionality
+
+Ensure all tests pass
+
+Update README if needed
+
+Create pull request with description
